@@ -1,8 +1,11 @@
 import Admin from '../models/Admin.js';
+import bcryptjs from 'bcryptjs';
 
 class AdminService {
 	async create(admin) {
-		const createdAdmin = await Admin.create({ ...admin });
+		const { password } = admin;
+		const hashPassword = bcryptjs.hashSync(password, 7);
+		const createdAdmin = await Admin.create({ ...admin, password: hashPassword });
 		return createdAdmin;
 	}
 
@@ -12,7 +15,9 @@ class AdminService {
 	}
 
 	async getOne(id) {
-		if (!id) throw new Error('не указан ID');
+		if (!id) {
+			throw new Error('не указан ID');
+		}
 		const admin = await Admin.findById(id);
 		return admin;
 	}

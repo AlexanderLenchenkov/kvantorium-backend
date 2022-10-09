@@ -4,18 +4,6 @@ import StudentService from '../services/StudentService.js';
 
 class ProjectService {
 	async create(project, files) {
-		// const { students, teacher } = project;
-		// students.forEach(student => {
-		// 	console.log(StudentService.getOne(student));
-		// });
-		// currentProject.students.forEach(student => {
-		// 	const currentStudent = JSON.parse(StudentService.getOne(student));
-		// 	if (currentStudent) {
-		// 		console.log('have');
-		// 	} else {
-		// 		console.log('not have');
-		// 	}
-		// });
 		const fileNameProject = FileService.saveFile(files.project, 'projects');
 		const fileNamePresentation = FileService.saveFile(files.presentation, 'presentations');
 		const fileNamePictures = FileService.saveFile(files.pictures, 'pictures');
@@ -34,7 +22,9 @@ class ProjectService {
 	}
 
 	async getOne(id) {
-		if (!id) throw new Error('не указан ID');
+		if (!id) {
+			throw new Error('не указан ID');
+		}
 		const project = await Project.findById(id);
 		return project;
 	}
