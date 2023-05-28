@@ -1,50 +1,160 @@
-import ProjectService from '../services/ProjectService.js';
+import CategoryModel from '../models/Category.js';
+import ProjectModel from '../models/Project.js';
+import mongoose from 'mongoose';
 
-class ProjectController {
-	async create(req, res) {
-		try {
-			const project = await ProjectService.create(req.body, req.files);
-			res.json(project);
-		} catch (e) {
-			res.status(500).json(e);
-		}
+export const create = async (req, res) => {
+	try {
+		const doc = new ProjectModel({
+			name: req.body.name,
+			description: req.body.description,
+			tags: req.body.tags,
+			category: req.body.category,
+			dateStart: req.body.dateStart,
+			dateEnd: req.body.dateEnd,
+			projectUrl: req.body.projectUrl,
+			imageUrl: req.body.imageUrl,
+			students: req.body.students.map((id) => mongoose.Types.ObjectId(id)),
+			teacher: mongoose.Types.ObjectId(req.body.teacher),
+		});
+
+		const post = await doc.save();
+
+		res.json(post);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({
+			message: 'Не удалось создать проект',
+		});
 	}
+};
 
-	async getAll(req, res) {
-		try {
-			const projects = await ProjectService.getAll();
-			res.json(projects);
-		} catch (e) {
-			res.status(500).json(e);
-		}
+export const update = async (req, res) => {
+	try {
+		const projectId = req.params.id;
+
+		await ProjectModel.updateOne(
+			{ _id: projectId },
+			{
+				name: req.body.name,
+				description: req.body.description,
+				tags: req.body.tags,
+				category: req.body.category,
+				dateStart: req.body.dateStart,
+				dateEnd: req.body.dateEnd,
+				projectUrl: req.body.projectUrl,
+				imageUrl: req.body.imageUrl,
+				students: req.body.students.map((id) => mongoose.Types.ObjectId(id)),
+				teacher: mongoose.Types.ObjectId(req.body.teacher),
+			},
+		);
+
+		res.json({
+			success: true,
+		});
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({
+			message: 'Не удалось обновить информацию о проекте',
+		});
 	}
+};
 
-	async getOne(req, res) {
-		try {
-			const project = await ProjectService.getOne(req.params.id);
-			res.json(project);
-		} catch (e) {
-			res.status(500).json(e);
-		}
+export const getOne = async (req, res) => {
+	try {
+		const projectId = req.params.id;
+
+		ProjectModel.findOneAndUpdate(
+			{
+				_id: projectId,
+			},
+			{
+				$inc: { viewsCount: 1 },
+			},
+			{
+				returnDocument: 'after',
+			},
+			(err, doc) => {
+				if (err) {
+					console.log(err);
+					return res.status(500).json({
+						message: 'Не удалось вернуть проект',
+					});
+				}
+
+				if (!doc) {
+					return res.status(404).json({
+						message: 'Проект не найден',
+					});
+				}
+
+				res.json(doc);
+			},
+		)
+			.populate('teacher')
+			.populate('students');
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({
+			message: 'Не удалось получить проект',
+		});
 	}
+};
 
-	async update(req, res) {
-		try {
-			const updatedProject = await ProjectService.update(req.body);
-			res.json(updatedProject);
-		} catch (e) {
-			res.status(500).json(e);
-		}
+export const getAll = async (req, res) => {
+	try {
+		const projects = await ProjectModel.find().populate('teacher').populate('students').exec();
+		res.json(projects);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({
+			message: 'Не удалось получить проекты',
+		});
 	}
+};
 
-	async delete(req, res) {
-		try {
-			const deletedProject = await ProjectService.delete(req.params.id);
-			res.json(deletedProject);
-		} catch (e) {
-			res.status(500).json(e);
-		}
+export const getCategories = async (req, res) => {
+	try {
+		const categories = await CategoryModel.find().exec();
+		res.json(categories);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({
+			message: 'Не удалось получить категории',
+		});
 	}
-}
+};
 
-export default new ProjectController();
+export const remove = async (req, res) => {
+	try {
+		const projectId = req.params.id;
+
+		ProjectModel.findOneAndDelete(
+			{
+				_id: projectId,
+			},
+			(err, doc) => {
+				if (err) {
+					console.log(err);
+					return res.status(500).json({
+						message: 'Не удалось удалить проект',
+					});
+				}
+
+				if (!doc) {
+					return res.status(404).json({
+						message: 'Проект не найден',
+					});
+				}
+
+				res.json({
+					success: true,
+				});
+			},
+		);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({
+			message: 'Не удалось удалить статью',
+		});
+	}
+};

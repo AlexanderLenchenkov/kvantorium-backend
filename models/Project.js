@@ -1,6 +1,6 @@
-import mongoose, { Types } from 'mongoose';
+import mongoose from 'mongoose';
 
-const Project = new mongoose.Schema(
+const ProjectSchema = new mongoose.Schema(
 	{
 		name: {
 			type: String,
@@ -8,7 +8,20 @@ const Project = new mongoose.Schema(
 		},
 		description: {
 			type: String,
-			default: 'Описание',
+			default: 'Описание отсутствует',
+		},
+		tags: {
+			type: Array,
+			default: [],
+		},
+		category: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: false,
+			ref: 'Category',
+		},
+		viewsCount: {
+			type: Number,
+			default: 0,
 		},
 		dateStart: {
 			type: Date,
@@ -18,32 +31,28 @@ const Project = new mongoose.Schema(
 			type: Date,
 			default: new Date(),
 		},
-		project: {
+		projectUrl: {
 			type: String,
-			required: true,
+			required: false,
 		},
-		presentation: {
-			type: String,
-			required: true,
-		},
-		picture: {
+		imageUrl: {
 			type: String,
 			required: true,
 		},
 		students: [
 			{
-				type: Types.ObjectId,
-				required: true,
-				ref: 'Student',
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'User',
+				required: false,
 			},
 		],
 		teacher: {
-			type: Types.ObjectId,
-			required: true,
-			ref: 'Teacher',
+			type: mongoose.Schema.Types.ObjectId,
+			required: false,
+			ref: 'User',
 		},
 	},
-	{ timestamps: true }
+	{ timestamps: true },
 );
 
-export default mongoose.model('Project', Project);
+export default mongoose.model('Project', ProjectSchema);
