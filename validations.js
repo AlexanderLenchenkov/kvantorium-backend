@@ -21,8 +21,8 @@ export const projectCreateValidation = [
 	body('teacher', 'Укажите руководителя проекта').isString(),
 
 	body('description', 'Введите описание проекта').isLength({ min: 3 }).optional().isString(),
-	body('dateStart', 'Укажите дату начала проекта').optional().isString(),
-	body('dateEnd', 'Укажите дату окончания проекта').optional().isString(),
+	body('dateStart', 'Укажите дату начала проекта').optional().isDate(),
+	body('dateEnd', 'Укажите дату окончания проекта').optional().isDate(),
 	body('description', 'Введите описание проекта').isLength({ min: 3 }).optional().isString(),
 	body('tags', 'Неверный формат тэгов').optional().isArray(),
 	body('imageUrl', 'Неверная ссылка на изображение').optional().isString(),

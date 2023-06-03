@@ -91,7 +91,8 @@ export const getOne = async (req, res) => {
 			},
 		)
 			.populate('teacher')
-			.populate('students');
+			.populate('students')
+			.populate('category');
 	} catch (err) {
 		console.log(err);
 		res.status(500).json({
@@ -102,7 +103,25 @@ export const getOne = async (req, res) => {
 
 export const getAll = async (req, res) => {
 	try {
-		const projects = await ProjectModel.find().populate('teacher').populate('students').exec();
+		const { category, name } = req.query;
+
+		let categoryFilter = {};
+		if (category) {
+			categoryFilter = { category: mongoose.Types.ObjectId(category) };
+		}
+
+		let projects = await ProjectModel.find(categoryFilter)
+			.populate('teacher')
+			.populate('students')
+			.populate('category')
+			.exec();
+
+		if (name) {
+			projects = projects.filter((project) =>
+				project.name.toLowerCase().includes(name.toLowerCase()),
+			);
+		}
+
 		res.json(projects);
 	} catch (err) {
 		console.log(err);
