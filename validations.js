@@ -15,15 +15,13 @@ export const loginValidation = [
 
 export const projectCreateValidation = [
 	body('name', 'Введите наименование проекта').isLength({ min: 3 }).isString(),
+	body('tags', 'Неверный формат тэгов').optional().isString(),
+	body('description', 'Введите описание проекта').isString().isLength({ min: 3 }),
 	body('category', 'Выберите категорию проекта').isString(),
-	body('projectUrl', 'Прикрепите проект').isString(),
-	body('students', 'Укажите участников проекта').isArray({ min: 1 }),
 	body('teacher', 'Укажите руководителя проекта').isString(),
-
-	body('description', 'Введите описание проекта').isLength({ min: 3 }).optional().isString(),
-	body('dateStart', 'Укажите дату начала проекта').optional().isDate(),
-	body('dateEnd', 'Укажите дату окончания проекта').optional().isDate(),
-	body('description', 'Введите описание проекта').isLength({ min: 3 }).optional().isString(),
-	body('tags', 'Неверный формат тэгов').optional().isArray(),
+	body('students', 'Укажите участников проекта').isArray({ min: 1 }),
 	body('imageUrl', 'Неверная ссылка на изображение').optional().isString(),
+	body('projectUrl', 'Прикрепите проект').optional().isString(),
+	body('dateStart', 'Укажите дату начала проекта').optional().isString(),
+	body('dateEnd', 'Укажите дату окончания проекта').optional().isString(),
 ];

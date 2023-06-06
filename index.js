@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-import fs from 'fs';
+import fs, { unlink } from 'fs';
 import multer from 'multer';
 import morgan from 'morgan';
 import cors from 'cors';
@@ -39,10 +39,17 @@ app.use(cors());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 app.use('/uploads', express.static('uploads'));
 
-app.post('/api/upload', checkAuth, upload.single('image'), (req, res) => {
+app.post('/api/upload', checkAuth, upload.single('file'), (req, res) => {
 	res.json({
 		url: `/uploads/${req.file.originalname}`,
 	});
+});
+app.delete('/api/upload', checkAuth, (req, res) => {
+	console.log(req.body);
+	const path = req.body.file;
+	console.log(path);
+	// fs.unlinkSync(path);
+	res.json({ message: 'success' });
 });
 app.use('/api', ProjectRouter);
 app.use('/api', UserRouter);

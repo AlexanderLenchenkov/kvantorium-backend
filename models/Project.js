@@ -8,7 +8,10 @@ const ProjectSchema = new mongoose.Schema(
 		},
 		description: {
 			type: String,
-			default: 'Описание отсутствует',
+			required: true,
+		},
+		text: {
+			type: String,
 		},
 		tags: {
 			type: Array,
@@ -16,7 +19,7 @@ const ProjectSchema = new mongoose.Schema(
 		},
 		category: {
 			type: mongoose.Schema.Types.ObjectId,
-			required: false,
+			required: true,
 			ref: 'Category',
 		},
 		viewsCount: {
@@ -25,30 +28,26 @@ const ProjectSchema = new mongoose.Schema(
 		},
 		dateStart: {
 			type: Date,
-			default: new Date(),
 		},
 		dateEnd: {
 			type: Date,
-			default: new Date(),
 		},
 		projectUrl: {
 			type: String,
-			required: false,
 		},
 		imageUrl: {
 			type: String,
-			required: true,
 		},
 		students: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: 'User',
-				required: false,
+				required: true,
 			},
 		],
 		teacher: {
 			type: mongoose.Schema.Types.ObjectId,
-			required: false,
+			required: true,
 			ref: 'User',
 		},
 	},

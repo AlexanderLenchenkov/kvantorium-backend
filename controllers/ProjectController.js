@@ -4,22 +4,26 @@ import mongoose from 'mongoose';
 
 export const create = async (req, res) => {
 	try {
+		// console.log(req.body);
 		const doc = new ProjectModel({
 			name: req.body.name,
 			description: req.body.description,
-			tags: req.body.tags,
+			tags: req.body.tags.split(','),
 			category: req.body.category,
 			dateStart: req.body.dateStart,
 			dateEnd: req.body.dateEnd,
 			projectUrl: req.body.projectUrl,
 			imageUrl: req.body.imageUrl,
-			students: req.body.students.map((id) => mongoose.Types.ObjectId(id)),
-			teacher: mongoose.Types.ObjectId(req.body.teacher),
+			students: req.body.students,
+			teacher: req.body.teacher,
+			// students: req.body.students.map((id) => mongoose.Types.ObjectId(id)),
+			// teacher: mongoose.Types.ObjectId(req.body.teacher),
 		});
 
 		const post = await doc.save();
 
 		res.json(post);
+		// res.json('fsdfsd');
 	} catch (err) {
 		console.log(err);
 		res.status(500).json({
@@ -37,14 +41,15 @@ export const update = async (req, res) => {
 			{
 				name: req.body.name,
 				description: req.body.description,
-				tags: req.body.tags,
+				tags: req.body.tags.split(','),
 				category: req.body.category,
+				// category: mongoose.Types.ObjectId(req.body.category),
 				dateStart: req.body.dateStart,
 				dateEnd: req.body.dateEnd,
 				projectUrl: req.body.projectUrl,
 				imageUrl: req.body.imageUrl,
-				students: req.body.students.map((id) => mongoose.Types.ObjectId(id)),
-				teacher: mongoose.Types.ObjectId(req.body.teacher),
+				students: req.body.students,
+				teacher: req.body.teacher,
 			},
 		);
 
@@ -105,12 +110,16 @@ export const getAll = async (req, res) => {
 	try {
 		const { category, name } = req.query;
 
-		let categoryFilter = {};
+		let searchFileds = {};
 		if (category) {
-			categoryFilter = { category: mongoose.Types.ObjectId(category) };
+			searchFileds.category = category;
 		}
+		// if(name) {
+		// 	searchFileds.name = name;
+		// }
 
-		let projects = await ProjectModel.find(categoryFilter)
+		let projects = await ProjectModel.find(searchFileds)
+			.sort({ createdAt: -1 })
 			.populate('teacher')
 			.populate('students')
 			.populate('category')
